@@ -4,6 +4,15 @@ A Podman-based solution for converting Canon CR3 raw files to DNG format using d
 
 > **Note**: This project is a containerized automation wrapper around [dnglab](https://github.com/dnglab/dnglab) to enable scheduled conversions on NAS systems and other automated environments. We are not affiliated with the dnglab project - this repository only automates the usage of their excellent tool.
 
+If you are a Canon R5 Mk2 photografer who is running Linux, dnglab might be one of the only ways to import your RAW image files so that you can view or edit them. Ever since I got the Canon R5 Mk2 i have been unable to view or edit my RAW files outside the world of Windows. Thanks to dnglab, we can convert the images to a format that is supported by Darktable.
+
+## My workflow
+
+- Import the images to my qnap NAS
+- Run this container on the qnap system (using QNAP Container Station) to convert the raw files to DNG.
+- Import the images to Darktable
+- Profit!
+
 ## Features
 
 - Convert CR3 files to DNG format while preserving folder structure

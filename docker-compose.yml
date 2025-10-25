@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   cr3-to-dng-converter:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/peterhenell/auto-convert-photos:latest
     container_name: cr3-to-dng-converter
     environment:
       # Source and destination directories inside the container
@@ -27,9 +25,7 @@ services:
 
   # Alternative service for dry-run mode
   cr3-to-dng-converter-dry-run:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/peterhenell/auto-convert-photos:latest
     container_name: cr3-to-dng-converter-dry-run
     environment:
       - SRC_DIR=/photos/landing
@@ -41,3 +37,19 @@ services:
     restart: "no"
     profiles:
       - dry-run
+
+  # Scheduled converter service (runs hourly with built-in cron)
+  cr3-converter-scheduled:
+    image: ghcr.io/peterhenell/auto-convert-photos:latest
+    container_name: cr3-converter-scheduled
+    environment:
+      - SRC_DIR=/photos/landing
+      - DST_DIR=/photos/converted
+      - TZ=Europe/Stockholm  # Change to your timezone
+    volumes:
+      - ${SOURCE_PATH:-./photos/landing}:/photos/landing:ro,Z
+      - ${DEST_PATH:-./photos/converted}:/photos/converted:Z
+    command: ["--scheduled"]
+    restart: unless-stopped
+    profiles:
+      - scheduled
