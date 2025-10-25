@@ -18,8 +18,8 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
-      image-digest: ${{ steps.build.outputs.digest }}
+      image-tag: ${{ steps.image-tag.outputs.tag }}
+      image-name: ${{ steps.repo.outputs.IMAGE_NAME }}
     permissions:
       contents: read
       packages: write
@@ -68,6 +68,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Set test image tag
+        id: image-tag
+        run: |
+          # Use the first tag from metadata for testing
+          TAGS="${{ steps.meta.outputs.tags }}"
+          FIRST_TAG=$(echo "$TAGS" | head -n1)
+          echo "tag=$FIRST_TAG" >> $GITHUB_OUTPUT
+          echo "Using image tag for testing: $FIRST_TAG"
+
   test-image:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -100,8 +109,9 @@ jobs:
 
       - name: Test container image (dry-run)
         run: |
-          # Use the SHA-based tag for testing
-          IMAGE="${{ env.REGISTRY }}/${{ steps.repo.outputs.IMAGE_NAME }}:${{ github.sha }}"
+          # Use the image tag from the build job
+          IMAGE="${{ needs.build-and-push.outputs.image-tag }}"
+          echo "Testing image: $IMAGE"
           docker run --rm \
             -v "/tmp/test-photos/landing:/photos/landing:ro" \
             -v "/tmp/test-photos/converted:/photos/converted" \
@@ -110,5 +120,6 @@ jobs:
 
       - name: Verify dnglab installation
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ steps.repo.outputs.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE="${{ needs.build-and-push.outputs.image-tag }}"
+          echo "Verifying dnglab in image: $IMAGE"
           docker run --rm "$IMAGE" sh -c "dnglab --version"
