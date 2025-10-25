@@ -2,6 +2,8 @@
 
 A Podman-based solution for converting Canon CR3 raw files to DNG format using dnglab.
 
+> **Note**: This project is a containerized automation wrapper around [dnglab](https://github.com/dnglab/dnglab) to enable scheduled conversions on NAS systems and other automated environments. We are not affiliated with the dnglab project - this repository only automates the usage of their excellent tool.
+
 ## Features
 
 - Convert CR3 files to DNG format while preserving folder structure
@@ -319,6 +321,17 @@ docker-compose exec cr3-to-dng-converter /usr/local/bin/convert-cr3-to-dng.sh --
 ## Contributing
 
 Feel free to submit issues and enhancement requests!
+
+## Acknowledgments
+
+This project is made possible by the excellent work of the [dnglab](https://github.com/dnglab/dnglab) team. We are deeply grateful for their efforts in creating a high-quality, open-source RAW to DNG converter.
+
+**Important**: This repository is not part of or affiliated with the dnglab project. We have created this containerized automation solution to:
+- Enable scheduled CR3 to DNG conversions on NAS systems
+- Provide a simple way to batch process camera files
+- Make dnglab easily deployable in containerized environments
+
+All the actual conversion work is performed by dnglab. Please direct any issues related to the conversion process itself to the [dnglab repository](https://github.com/dnglab/dnglab).
 
 ## License
 
