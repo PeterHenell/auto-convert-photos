@@ -34,6 +34,27 @@ sudo apt install podman-compose
 
 ## Quick Start
 
+### Option 1: Use Pre-built Image from GitHub Container Registry
+
+```bash
+# Pull the latest image
+podman pull ghcr.io/peterhenell/auto-convert-photos:latest
+
+# Run conversion directly
+podman run --rm \
+  -v "/path/to/cr3/files:/photos/landing:ro,Z" \
+  -v "/path/to/converted:/photos/converted:Z" \
+  ghcr.io/peterhenell/auto-convert-photos:latest
+
+# Run dry-run
+podman run --rm \
+  -v "/path/to/cr3/files:/photos/landing:ro,Z" \
+  -v "/path/to/converted:/photos/converted:Z" \
+  ghcr.io/peterhenell/auto-convert-photos:latest --dry-run
+```
+
+### Option 2: Build Your Own Image
+
 ### 1. Build the Podman Image
 
 ```bash
@@ -243,6 +264,34 @@ podman image prune
 ```
 
 ## Advanced Usage
+
+### Using Pre-built Images from GitHub Actions
+
+This repository automatically builds and publishes container images to GitHub Container Registry (GHCR) when code is pushed. You can use these pre-built images without building locally:
+
+```bash
+# Use the latest stable image
+podman run --rm \
+  -v "/path/to/cr3:/photos/landing:ro,Z" \
+  -v "/path/to/converted:/photos/converted:Z" \
+  ghcr.io/peterhenell/auto-convert-photos:latest
+
+# Use a specific version (if tagged)
+podman run --rm \
+  -v "/path/to/cr3:/photos/landing:ro,Z" \
+  -v "/path/to/converted:/photos/converted:Z" \
+  ghcr.io/peterhenell/auto-convert-photos:v1.0.0
+
+# Use with docker-compose by updating the image reference:
+```
+
+Update your `docker-compose.yml` to use the pre-built image:
+```yaml
+services:
+  cr3-to-dng-converter:
+    image: ghcr.io/peterhenell/auto-convert-photos:latest
+    # Remove the 'build:' section when using pre-built images
+```
 
 ### Custom dnglab Version
 
