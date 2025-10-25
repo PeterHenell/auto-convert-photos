@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  cr3-to-dng-converter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cr3-to-dng-converter
+    environment:
+      # Source and destination directories inside the container
+      - SRC_DIR=/photos/landing
+      - DST_DIR=/photos/converted
+    volumes:
+      # Mount your local photo directories
+      # Change these paths to match your actual directories
+      - ${SOURCE_PATH:-./photos/landing}:/photos/landing:ro,Z
+      - ${DEST_PATH:-./photos/converted}:/photos/converted:Z
+    # The container will run the script and then exit
+    # Remove this line if you want the container to stay running
+    restart: "no"
+    
+    # Uncomment the following lines if you want to run in dry-run mode by default
+    # command: ["--dry-run"]
+    
+    # Uncomment to see more verbose output
+    # command: ["-v"]
+
+  # Alternative service for dry-run mode
+  cr3-to-dng-converter-dry-run:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cr3-to-dng-converter-dry-run
+    environment:
+      - SRC_DIR=/photos/landing
+      - DST_DIR=/photos/converted
+    volumes:
+      - ${SOURCE_PATH:-./photos/landing}:/photos/landing:ro,Z
+      - ${DEST_PATH:-./photos/converted}:/photos/converted:Z
+    command: ["--dry-run"]
+    restart: "no"
+    profiles:
+      - dry-run
