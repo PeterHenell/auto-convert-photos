@@ -17,6 +17,8 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.images }}
     permissions:
       contents: read
       packages: write
@@ -95,12 +97,15 @@ jobs:
           touch /tmp/test-photos/landing/test2.cr3
 
       - name: Test container image (dry-run)
-        run: |
-          docker run --rm \
-            -v "/tmp/test-photos/landing:/photos/landing:ro" \
-            -v "/tmp/test-photos/converted:/photos/converted" \
-            ${{ env.REGISTRY }}/${{ steps.repo.outputs.IMAGE_NAME }}:${{ github.sha }} \
-            --dry-run
+              run: |
+                IMAGE="${{ needs.build-and-push.outputs.image }}"
+                # If multiple images/tags are returned, select the first:
+                IMAGE="$(echo "$IMAGE" | head -n1)"
+                docker run --rm \
+                  -v "/tmp/test-photos/landing:/photos/landing:ro" \
+                  -v "/tmp/test-photos/converted:/photos/converted" \
+                  "$IMAGE" \
+                  --dry-run
 
       - name: Verify dnglab installation
         run: |
